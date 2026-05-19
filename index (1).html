@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Alex Morgan — Freelance Web Developer & UI/UX Designer. Building premium digital experiences that convert visitors into clients." />
+  <meta name="keywords" content="freelance developer, web design, UI UX, React, JavaScript, portfolio" />
+  <meta name="author" content="Alex Morgan" />
+  <title>Alex Morgan — Freelance Developer & Designer</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" />
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ============================================================
+       CSS CUSTOM PROPERTIES — Design Tokens
+    ============================================================ */
+    :root {
+      --bg:          #080809;
+      --bg-2:        #0f0f12;
+      --bg-3:        #141418;
+      --surface:     rgba(255,255,255,0.04);
+      --surface-hov: rgba(255,255,255,0.07);
+      --border:      rgba(255,255,255,0.08);
+      --border-hov:  rgba(201,168,76,0.4);
+
+      --gold:        #C9A84C;
+      --gold-lt:     #E2C97E;
+      --gold-dk:     #9A7A2E;
+      --gold-glow:   rgba(201,168,76,0.15);
+
+      --text:        #F0EDE6;
+      --text-muted:  #7A776E;
+      --text-subtle: #4A4842;
+
+      --ff-display: 'Cormorant Garamond', Georgia, serif;
+      --ff-ui:      'Syne', sans-serif;
+      --ff-body:    'DM Sans', sans-serif;
+
+      --radius:    12px;
+      --radius-lg: 20px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow:    0 8px 32px rgba(0,0,0,0.5);
+      --shadow-lg: 0 24px 64px rgba(0,0,0,0.6);
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ff-body);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+      /* Subtle noise texture */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button { border: none; background: none; cursor: pointer; font-family: inherit; }
+    ul { list-style: none; }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    section { padding: 110px 0; }
+
+    /* ============================================================
+       PRELOADER
+    ============================================================ */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #preloader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-inner {
+      text-align: center;
+    }
+    .loader-ring {
+      width: 56px; height: 56px;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 20px;
+    }
+    .loader-text {
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ============================================================
+       SCROLL REVEAL
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0;
+      transition: background 0.4s ease, box-shadow 0.4s ease, padding 0.4s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(8,8,9,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0;
+      transition: padding 0.4s ease;
+    }
+    #navbar.scrolled .nav-inner { padding: 16px 0; }
+
+    .nav-logo {
+      font-family: var(--ff-display);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+    .nav-logo span { color: var(--gold); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+    .nav-links a {
+      font-family: var(--ff-ui);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width var(--transition);
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      font-family: var(--ff-ui);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg) !important;
+      background: var(--gold);
+      padding: 10px 22px;
+      border-radius: 4px;
+      transition: background var(--transition), transform var(--transition) !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover {
+      background: var(--gold-lt) !important;
+      transform: translateY(-1px) !important;
+      color: var(--bg) !important;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .hamburger span {
+      width: 24px; height: 1.5px;
+      background: var(--text);
+      transition: var(--transition);
+      display: block;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+
+    /* Mobile nav */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg-2);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-nav.open { opacity: 1; pointer-events: all; display: flex; }
+    .mobile-nav a {
+      font-family: var(--ff-display);
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--text);
+      transition: color var(--transition);
+    }
+    .mobile-nav a:hover { color: var(--gold); }
+
+    /* ============================================================
+       SECTION LABEL
+    ============================================================ */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .section-label::before {
+      content: '';
+      width: 28px; height: 1px;
+      background: var(--gold);
+    }
+
+    .section-title {
+      font-family: var(--ff-display);
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .section-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .section-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.8;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+      margin-bottom: 70px;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--ff-ui);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 15px 30px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.06);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .btn:hover::before { opacity: 1; }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--bg);
+    }
+    .btn-primary:hover {
+      background: var(--gold-lt);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(201,168,76,0.3);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border-hov);
+      color: var(--text);
+      background: transparent;
+    }
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      color: var(--text-muted);
+      padding: 0;
+      font-size: 11px;
+      gap: 6px;
+    }
+    .btn-ghost:hover { color: var(--gold); }
+    .btn-ghost i { font-size: 10px; transition: transform var(--transition); }
+    .btn-ghost:hover i { transform: translateX(4px); }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated grid background */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+
+    /* Glowing orbs */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%);
+      top: -100px; right: -100px;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+    .hero-orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(201,168,76,0.05), transparent 70%);
+      bottom: 0; left: -100px;
+      animation: floatOrb 10s ease-in-out infinite reverse;
+    }
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding-top: 120px;
+      padding-bottom: 60px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      animation: fadeSlideDown 0.8s ease both;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: #4CAF50;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    .hero-name {
+      font-family: var(--ff-display);
+      font-size: clamp(56px, 9vw, 120px);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 24px;
+      animation: fadeSlideUp 0.9s ease 0.1s both;
+    }
+    .hero-name .line-2 {
+      display: block;
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero-tagline {
+      font-family: var(--ff-ui);
+      font-size: clamp(14px, 2vw, 17px);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 48px;
+      max-width: 500px;
+      animation: fadeSlideUp 0.9s ease 0.2s both;
+    }
+
+    .hero-tagline .typed-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: var(--gold);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 440px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+      animation: fadeSlideUp 0.9s ease 0.3s both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeSlideUp 0.9s ease 0.4s both;
+      margin-bottom: 80px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      animation: fadeSlideUp 0.9s ease 0.5s both;
+      flex-wrap: wrap;
+    }
+    .stat-item {}
+    .stat-num {
+      font-family: var(--ff-display);
+      font-size: 42px;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+      margin-top: 6px;
+    }
+
+    /* Scroll indicator */
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--ff-ui);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+      animation: fadeSlideUp 1s ease 1s both;
+      cursor: pointer;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollDrop 2s ease infinite;
+    }
+    @keyframes scrollDrop {
+      0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+      51% { transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+    }
+
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* ============================================================
+       MARQUEE DIVIDER
+    ============================================================ */
+    .marquee-section {
+      padding: 28px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .marquee-track {
+      display: flex;
+      gap: 0;
+      animation: marquee 25s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 32px;
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+    .marquee-item span { color: var(--gold); font-size: 16px; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    /* ============================================================
+       ABOUT
+    ============================================================ */
+    #about { background: var(--bg-2); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-image-wrap {
+      position: relative;
+    }
+    .about-image-frame {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+    }
+    .about-image-placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: linear-gradient(135deg, var(--bg-3) 0%, rgba(201,168,76,0.05) 100%);
+    }
+    .about-image-placeholder i {
+      font-size: 64px;
+      color: var(--gold);
+      opacity: 0.3;
+    }
+    .about-image-placeholder span {
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+
+    .about-badge {
+      position: absolute;
+      bottom: -20px; right: -20px;
+      background: var(--gold);
+      color: var(--bg);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+    .about-badge-num {
+      font-family: var(--ff-display);
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      display: block;
+    }
+    .about-badge-text {
+      font-family: var(--ff-ui);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .about-deco {
+      position: absolute;
+      top: -20px; left: -20px;
+      width: 80px; height: 80px;
+      border: 1px solid var(--border-hov);
+      border-radius: var(--radius);
+      pointer-events: none;
+    }
+
+    .about-body p {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      font-size: 15px;
+      line-height: 1.85;
+    }
+
+    .strengths-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 36px 0;
+    }
+    .strength-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--ff-ui);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .strength-item:hover {
+      border-color: var(--border-hov);
+      color: var(--text);
+    }
+    .strength-item i { color: var(--gold); font-size: 13px; }
+
+    /* ============================================================
+       SKILLS
+    ============================================================ */
+    #skills {}
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .skill-card:hover {
+      border-color: var(--border-hov);
+      background: var(--surface-hov);
+      transform: translateY(-4px);
+    }
+    .skill-card:hover::before { opacity: 1; }
+
+    .skill-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .skill-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .skill-icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: var(--gold-glow);
+      border: 1px solid rgba(201,168,76,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--gold);
+    }
+    .skill-name {
+      font-family: var(--ff-ui);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .skill-pct {
+      font-family: var(--ff-display);
+      font-size: 26px;
+      font-weight: 300;
+      color: var(--gold);
+    }
+
+    .skill-bar-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--gold-dk), var(--gold));
+      width: 0;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ============================================================
+       SERVICES
+    ============================================================ */
+    #services { background: var(--bg-2); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .service-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.04), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .service-card:hover {
+      border-color: var(--border-hov);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(201,168,76,0.1);
+    }
+    .service-card:hover::after { opacity: 1; }
+
+    .service-num {
+      font-family: var(--ff-display);
+      font-size: 13px;
+      color: var(--text-subtle);
+      margin-bottom: 24px;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+    .service-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: var(--gold-glow);
+      border: 1px solid rgba(201,168,76,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+    .service-title {
+      font-family: var(--ff-ui);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .service-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+    .service-arrow {
+      position: absolute;
+      top: 36px; right: 30px;
+      font-size: 18px;
+      color: var(--text-subtle);
+      transition: var(--transition);
+    }
+    .service-card:hover .service-arrow {
+      color: var(--gold);
+      transform: translate(3px, -3px);
+    }
+
+    /* ============================================================
+       PORTFOLIO
+    ============================================================ */
+    #portfolio {}
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+    .project-card:hover {
+      border-color: var(--border-hov);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .project-thumb {
+      aspect-ratio: 16/10;
+      background: var(--bg-3);
+      position: relative;
+      overflow: hidden;
+    }
+    .project-thumb-inner {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--bg-3), rgba(201,168,76,0.05));
+      transition: transform var(--transition);
+      flex-direction: column;
+      gap: 12px;
+    }
+    .project-card:hover .project-thumb-inner { transform: scale(1.03); }
+    .project-thumb-inner i {
+      font-size: 36px;
+      color: var(--gold);
+      opacity: 0.3;
+    }
+    .project-thumb-inner span {
+      font-family: var(--ff-ui);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+    .project-tag {
+      position: absolute;
+      top: 14px; left: 14px;
+      background: rgba(8,8,9,0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-family: var(--ff-ui);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .project-body {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .project-title {
+      font-family: var(--ff-ui);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .project-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      flex: 1;
+      margin-bottom: 20px;
+    }
+    .project-links {
+      display: flex;
+      gap: 10px;
+    }
+    .project-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: 6px;
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: var(--transition);
+    }
+    .project-btn-demo {
+      background: var(--gold);
+      color: var(--bg);
+    }
+    .project-btn-demo:hover {
+      background: var(--gold-lt);
+      transform: translateY(-1px);
+    }
+    .project-btn-gh {
+      background: var(--surface-hov);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .project-btn-gh:hover {
+      border-color: var(--border-hov);
+      color: var(--text);
+    }
+
+    /* ============================================================
+       TESTIMONIALS
+    ============================================================ */
+    #testimonials { background: var(--bg-2); }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: var(--transition);
+      position: relative;
+    }
+    .testimonial-card:hover {
+      border-color: var(--border-hov);
+      transform: translateY(-4px);
+    }
+    .testimonial-card::before {
+      content: '\201C';
+      position: absolute;
+      top: 20px; right: 28px;
+      font-family: var(--ff-display);
+      font-size: 80px;
+      color: var(--gold);
+      opacity: 0.12;
+      line-height: 1;
+    }
+
+    .testimonial-stars {
+      display: flex;
+      gap: 4px;
+      color: var(--gold);
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-text {
+      font-family: var(--ff-display);
+      font-size: 16px;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 28px;
+      font-weight: 300;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .author-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--gold-glow);
+      border: 1px solid rgba(201,168,76,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ff-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gold);
+    }
+    .author-name {
+      font-family: var(--ff-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .author-role {
+      font-size: 12px;
+      color: var(--text-subtle);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       PRICING
+    ============================================================ */
+    #pricing {}
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      transition: var(--transition);
+      position: relative;
+    }
+    .pricing-card:hover {
+      border-color: var(--border-hov);
+      transform: translateY(-4px);
+    }
+
+    .pricing-card.featured {
+      background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+      border-color: rgba(201,168,76,0.3);
+      transform: scale(1.03);
+    }
+    .pricing-card.featured:hover {
+      transform: scale(1.03) translateY(-4px);
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--bg);
+      font-family: var(--ff-ui);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .pricing-tier {
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .pricing-price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .price-currency {
+      font-family: var(--ff-display);
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--text-muted);
+    }
+    .price-amount {
+      font-family: var(--ff-display);
+      font-size: 56px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1;
+    }
+    .pricing-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .pricing-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 28px;
+    }
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .pricing-features li i {
+      color: var(--gold);
+      font-size: 12px;
+      width: 16px;
+      text-align: center;
+    }
+    .pricing-features li.disabled {
+      opacity: 0.35;
+      text-decoration: line-through;
+    }
+    .pricing-features li.disabled i { color: var(--text-subtle); }
+
+    /* ============================================================
+       CONTACT
+    ============================================================ */
+    #contact { background: var(--bg-2); }
+
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .contact-info p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: var(--transition);
+      color: var(--text-muted);
+    }
+    .contact-link:hover {
+      border-color: var(--border-hov);
+      color: var(--text);
+      transform: translateX(4px);
+    }
+    .contact-link i {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--gold-glow);
+      border: 1px solid rgba(201,168,76,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .contact-link-text {
+      font-family: var(--ff-ui);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 12px;
+    }
+    .social-btn {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .social-btn:hover {
+      background: var(--gold-glow);
+      border-color: rgba(201,168,76,0.3);
+      color: var(--gold);
+      transform: translateY(-3px);
+    }
+
+    /* Contact form */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-group label {
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-family: var(--ff-body);
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition);
+      width: 100%;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--text-subtle); }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--gold); }
+    .form-group textarea { resize: vertical; min-height: 130px; }
+    .form-group select { appearance: none; cursor: pointer; }
+    .form-group select option { background: var(--bg-2); color: var(--text); }
+
+    .form-submit {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .form-note {
+      font-size: 12px;
+      color: var(--text-subtle);
+    }
+    .form-note i { color: var(--gold); margin-right: 5px; }
+
+    #form-msg {
+      font-family: var(--ff-ui);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      display: none;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+    }
+    #form-msg.success {
+      display: block;
+      background: rgba(76, 175, 80, 0.1);
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      color: #4CAF50;
+    }
+    #form-msg.error {
+      display: block;
+      background: rgba(244, 67, 54, 0.1);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      color: #f44336;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 60px 0 36px;
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand {}
+    .footer-logo {
+      font-family: var(--ff-display);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .footer-logo span { color: var(--gold); }
+    .footer-tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 240px;
+      margin-bottom: 24px;
+    }
+    .footer-col-title {
+      font-family: var(--ff-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+      margin-bottom: 20px;
+    }
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .footer-links a {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-subtle);
+    }
+    .footer-copy span { color: var(--gold); }
+
+    /* ============================================================
+       BACK TO TOP
+    ============================================================ */
+    #back-to-top {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      width: 46px; height: 46px;
+      border-radius: 10px;
+      background: var(--gold);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 500;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+      box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: all; transform: none; }
+    #back-to-top:hover { background: var(--gold-lt); }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 1024px) {
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-image-wrap { max-width: 400px; }
+      .services-grid { grid-template-columns: repeat(2, 1fr); }
+      .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+      .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .pricing-card.featured { transform: none; }
+      .pricing-card.featured:hover { transform: translateY(-4px); }
+      .contact-wrap { grid-template-columns: 1fr; gap: 48px; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      section { padding: 80px 0; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero-name { font-size: clamp(48px, 12vw, 72px); }
+      .services-grid { grid-template-columns: 1fr; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+      .hero-stats { gap: 32px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; justify-content: center; }
+      .about-badge { bottom: -14px; right: -10px; }
+      .strengths-grid { grid-template-columns: 1fr; }
+      .pricing-card.featured { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================
+       PRELOADER
+  ======================================================== -->
+  <div id="preloader" role="status" aria-label="Loading">
+    <div class="loader-inner">
+      <div class="loader-ring"></div>
+      <p class="loader-text">Loading Portfolio</p>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       NAVBAR
+  ======================================================== -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#hero" class="nav-logo">Alex<span>.</span></a>
+
+        <ul class="nav-links" role="list">
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#portfolio">Work</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact" class="nav-cta">Hire Me</a></li>
+        </ul>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <a href="#about" class="mobile-link">About</a>
+    <a href="#skills" class="mobile-link">Skills</a>
+    <a href="#services" class="mobile-link">Services</a>
+    <a href="#portfolio" class="mobile-link">Work</a>
+    <a href="#pricing" class="mobile-link">Pricing</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+  </div>
+
+  <main>
+
+    <!-- ========================================================
+         HERO
+    ======================================================== -->
+    <section id="hero" aria-label="Hero section">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge" aria-label="Available for work">
+            <span class="dot" aria-hidden="true"></span>
+            Available for freelance work
+          </div>
+
+          <h1 class="hero-name">
+            Alex Morgan
+            <span class="line-2">Developer.</span>
+          </h1>
+
+          <p class="hero-tagline">
+            <span id="typed-text"></span>
+            <span class="typed-cursor" aria-hidden="true"></span>
+          </p>
+
+          <p class="hero-desc">
+            I craft premium digital experiences that don't just look beautiful — they convert visitors into paying clients and drive real business results.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary">
+              <i class="fas fa-paper-plane" aria-hidden="true"></i>
+              Hire Me
+            </a>
+            <a href="#portfolio" class="btn btn-outline">
+              <i class="fas fa-arrow-right" aria-hidden="true"></i>
+              View Projects
+            </a>
+          </div>
+
+          <div class="hero-stats" aria-label="Key statistics">
+            <div class="stat-item">
+              <span class="stat-num" data-target="5">0</span><span class="stat-num">+</span>
+              <div class="stat-label">Years Experience</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num" data-target="80">0</span><span class="stat-num">+</span>
+              <div class="stat-label">Projects Delivered</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num" data-target="50">0</span><span class="stat-num">+</span>
+              <div class="stat-label">Happy Clients</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num" data-target="100">0</span><span class="stat-num">%</span>
+              <div class="stat-label">Satisfaction Rate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-scroll" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})" role="button" tabindex="0" aria-label="Scroll to About section">
+        <div class="scroll-line" aria-hidden="true"></div>
+        Scroll
+      </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-section" aria-hidden="true">
+      <div class="marquee-track">
+        <!-- Doubled for seamless loop -->
+        <span class="marquee-item">React <span>✦</span></span>
+        <span class="marquee-item">Next.js <span>✦</span></span>
+        <span class="marquee-item">Node.js <span>✦</span></span>
+        <span class="marquee-item">TypeScript <span>✦</span></span>
+        <span class="marquee-item">UI/UX Design <span>✦</span></span>
+        <span class="marquee-item">Figma <span>✦</span></span>
+        <span class="marquee-item">PostgreSQL <span>✦</span></span>
+        <span class="marquee-item">Tailwind CSS <span>✦</span></span>
+        <span class="marquee-item">SEO <span>✦</span></span>
+        <span class="marquee-item">Performance <span>✦</span></span>
+        <span class="marquee-item">React <span>✦</span></span>
+        <span class="marquee-item">Next.js <span>✦</span></span>
+        <span class="marquee-item">Node.js <span>✦</span></span>
+        <span class="marquee-item">TypeScript <span>✦</span></span>
+        <span class="marquee-item">UI/UX Design <span>✦</span></span>
+        <span class="marquee-item">Figma <span>✦</span></span>
+        <span class="marquee-item">PostgreSQL <span>✦</span></span>
+        <span class="marquee-item">Tailwind CSS <span>✦</span></span>
+        <span class="marquee-item">SEO <span>✦</span></span>
+        <span class="marquee-item">Performance <span>✦</span></span>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         ABOUT
+    ======================================================== -->
+    <section id="about" aria-labelledby="about-title">
+      <div class="container">
+        <div class="about-grid">
+          <!-- Image -->
+          <div class="about-image-wrap reveal">
+            <div class="about-deco" aria-hidden="true"></div>
+            <div class="about-image-frame">
+              <div class="about-image-placeholder" role="img" aria-label="Alex Morgan's profile photo placeholder">
+                <i class="fas fa-user" aria-hidden="true"></i>
+                <span>Your Photo Here</span>
+              </div>
+            </div>
+            <div class="about-badge" aria-label="5 years of experience">
+              <span class="about-badge-num">5+</span>
+              <span class="about-badge-text">Years of<br>Excellence</span>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="about-body">
+            <div class="section-label reveal">About Me</div>
+            <h2 class="section-title reveal reveal-delay-1" id="about-title">
+              Turning ideas into<br><em>digital reality</em>
+            </h2>
+            <p class="reveal reveal-delay-2">
+              Hi, I'm Alex — a freelance full-stack developer and UI/UX designer with 5+ years of experience crafting digital products that people genuinely love to use. I blend technical precision with creative sensibility to deliver work that stands apart.
+            </p>
+            <p class="reveal reveal-delay-2">
+              From startups building their MVP to established businesses needing a digital refresh, I've helped 50+ clients achieve their goals on time and within budget. My code is clean, my designs are intentional, and my communication is always clear.
+            </p>
+
+            <div class="strengths-grid reveal reveal-delay-3" role="list" aria-label="Key strengths">
+              <div class="strength-item" role="listitem">
+                <i class="fas fa-bolt" aria-hidden="true"></i> Fast Delivery
+              </div>
+              <div class="strength-item" role="listitem">
+                <i class="fas fa-mobile-alt" aria-hidden="true"></i> Mobile-First
+              </div>
+              <div class="strength-item" role="listitem">
+                <i class="fas fa-code" aria-hidden="true"></i> Clean Code
+              </div>
+              <div class="strength-item" role="listitem">
+                <i class="fas fa-headset" aria-hidden="true"></i> Great Support
+              </div>
+              <div class="strength-item" role="listitem">
+                <i class="fas fa-search" aria-hidden="true"></i> SEO Optimized
+              </div>
+              <div class="strength-item" role="listitem">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i> Secure Build
+              </div>
+            </div>
+
+            <div class="reveal reveal-delay-4">
+              <a href="#contact" class="btn btn-primary">
+                Let's Work Together
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SKILLS
+    ======================================================== -->
+    <section id="skills" aria-labelledby="skills-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label reveal">Expertise</div>
+            <h2 class="section-title reveal reveal-delay-1" id="skills-title">
+              Tools of my<br><em>craft</em>
+            </h2>
+          </div>
+          <p class="section-subtitle reveal reveal-delay-2">
+            Continuously learning and refining — these are the technologies I rely on to deliver exceptional results.
+          </p>
+        </div>
+
+        <div class="skills-grid" role="list" aria-label="Skills list">
+          <!-- Each card animates skill bar on scroll -->
+          <div class="skill-card reveal" role="listitem" data-skill="92">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fab fa-html5"></i></div>
+                <span class="skill-name">HTML5</span>
+              </div>
+              <span class="skill-pct" aria-label="92 percent">92%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="skill-card reveal reveal-delay-1" role="listitem" data-skill="90">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fab fa-css3-alt"></i></div>
+                <span class="skill-name">CSS3</span>
+              </div>
+              <span class="skill-pct" aria-label="90 percent">90%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="skill-card reveal reveal-delay-2" role="listitem" data-skill="88">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fab fa-js-square"></i></div>
+                <span class="skill-name">JavaScript</span>
+              </div>
+              <span class="skill-pct" aria-label="88 percent">88%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="skill-card reveal reveal-delay-3" role="listitem" data-skill="85">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fab fa-react"></i></div>
+                <span class="skill-name">React</span>
+              </div>
+              <span class="skill-pct" aria-label="85 percent">85%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="skill-card reveal" role="listitem" data-skill="80">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fab fa-node-js"></i></div>
+                <span class="skill-name">Node.js</span>
+              </div>
+              <span class="skill-pct" aria-label="80 percent">80%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="skill-card reveal reveal-delay-1" role="listitem" data-skill="82">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fas fa-pencil-ruler"></i></div>
+                <span class="skill-name">UI/UX Design</span>
+              </div>
+              <span class="skill-pct" aria-label="82 percent">82%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="skill-card reveal reveal-delay-2" role="listitem" data-skill="78">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fas fa-search"></i></div>
+                <span class="skill-name">SEO</span>
+              </div>
+              <span class="skill-pct" aria-label="78 percent">78%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="skill-card reveal reveal-delay-3" role="listitem" data-skill="87">
+            <div class="skill-top">
+              <div class="skill-name-wrap">
+                <div class="skill-icon" aria-hidden="true"><i class="fab fa-github"></i></div>
+                <span class="skill-name">Git / GitHub</span>
+              </div>
+              <span class="skill-pct" aria-label="87 percent">87%</span>
+            </div>
+            <div class="skill-bar-track" role="progressbar" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100">
+              <div class="skill-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SERVICES
+    ======================================================== -->
+    <section id="services" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label reveal">What I Offer</div>
+            <h2 class="section-title reveal reveal-delay-1" id="services-title">
+              Services that<br><em>deliver results</em>
+            </h2>
+          </div>
+          <p class="section-subtitle reveal reveal-delay-2">
+            Every service is tailored to your specific goals — not templated, not rushed. Real work that creates real value.
+          </p>
+        </div>
+
+        <div class="services-grid">
+          <div class="service-card reveal">
+            <div class="service-num">01</div>
+            <div class="service-icon-wrap" aria-hidden="true"><i class="fas fa-laptop-code"></i></div>
+            <h3 class="service-title">Website Development</h3>
+            <p class="service-desc">Full-stack web applications and websites built with modern frameworks, optimised for performance and scalability.</p>
+            <i class="fas fa-arrow-up-right-from-square service-arrow" aria-hidden="true"></i>
+          </div>
+
+          <div class="service-card reveal reveal-delay-1">
+            <div class="service-num">02</div>
+            <div class="service-icon-wrap" aria-hidden="true"><i class="fas fa-layer-group"></i></div>
+            <h3 class="service-title">Landing Page Design</h3>
+            <p class="service-desc">High-converting landing pages designed to capture leads and turn visitors into customers — with compelling copy structure.</p>
+            <i class="fas fa-arrow-up-right-from-square service-arrow" aria-hidden="true"></i>
+          </div>
+
+          <div class="service-card reveal reveal-delay-2">
+            <div class="service-num">03</div>
+            <div class="service-icon-wrap" aria-hidden="true"><i class="fas fa-paint-brush"></i></div>
+            <h3 class="service-title">Website Redesign</h3>
+            <p class="service-desc">Transform your outdated site into a modern, professional platform that actually reflects the quality of your business.</p>
+            <i class="fas fa-arrow-up-right-from-square service-arrow" aria-hidden="true"></i>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-num">04</div>
+            <div class="service-icon-wrap" aria-hidden="true"><i class="fas fa-bug"></i></div>
+            <h3 class="service-title">Bug Fixing & QA</h3>
+            <p class="service-desc">Systematic debugging and quality assurance — I'll find the problems your users are hitting and eliminate them cleanly.</p>
+            <i class="fas fa-arrow-up-right-from-square service-arrow" aria-hidden="true"></i>
+          </div>
+
+          <div class="service-card reveal reveal-delay-1">
+            <div class="service-num">05</div>
+            <div class="service-icon-wrap" aria-hidden="true"><i class="fas fa-tachometer-alt"></i></div>
+            <h3 class="service-title">Performance Optimization</h3>
+            <p class="service-desc">Speed matters — I audit and optimise your site's Core Web Vitals to improve rankings, experience, and conversion rates.</p>
+            <i class="fas fa-arrow-up-right-from-square service-arrow" aria-hidden="true"></i>
+          </div>
+
+          <div class="service-card reveal reveal-delay-2">
+            <div class="service-num">06</div>
+            <div class="service-icon-wrap" aria-hidden="true"><i class="fas fa-chart-line"></i></div>
+            <h3 class="service-title">SEO Optimization</h3>
+            <p class="service-desc">Technical and on-page SEO that gets your site ranking. From site structure to schema markup — done properly, not cheaply.</p>
+            <i class="fas fa-arrow-up-right-from-square service-arrow" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PORTFOLIO
+    ======================================================== -->
+    <section id="portfolio" aria-labelledby="portfolio-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label reveal">Portfolio</div>
+            <h2 class="section-title reveal reveal-delay-1" id="portfolio-title">
+              Selected<br><em>projects</em>
+            </h2>
+          </div>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn btn-ghost reveal reveal-delay-2">
+            View All on GitHub <i class="fas fa-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="portfolio-grid">
+          <!-- Project 1 -->
+          <article class="project-card reveal">
+            <div class="project-thumb">
+              <div class="project-thumb-inner">
+                <i class="fas fa-store" aria-hidden="true"></i>
+                <span>E-Commerce Platform</span>
+              </div>
+              <span class="project-tag">React</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">ShopElite — E-Commerce Platform</h3>
+              <p class="project-desc">Full-featured online store with cart, payments via Stripe, admin dashboard, and inventory management. 40% faster than client's previous Shopify setup.</p>
+              <div class="project-links">
+                <a href="#" class="project-btn project-btn-demo" aria-label="View live demo of ShopElite">
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i> Demo
+                </a>
+                <a href="#" class="project-btn project-btn-gh" aria-label="View ShopElite on GitHub">
+                  <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 2 -->
+          <article class="project-card reveal reveal-delay-1">
+            <div class="project-thumb">
+              <div class="project-thumb-inner">
+                <i class="fas fa-hospital" aria-hidden="true"></i>
+                <span>Healthcare SaaS</span>
+              </div>
+              <span class="project-tag">Next.js</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">MedBook — Healthcare Scheduling</h3>
+              <p class="project-desc">Patient appointment booking system with role-based auth, SMS reminders, and an analytics dashboard for clinic managers. HIPAA-compliant architecture.</p>
+              <div class="project-links">
+                <a href="#" class="project-btn project-btn-demo" aria-label="View live demo of MedBook">
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i> Demo
+                </a>
+                <a href="#" class="project-btn project-btn-gh" aria-label="View MedBook on GitHub">
+                  <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 3 -->
+          <article class="project-card reveal reveal-delay-2">
+            <div class="project-thumb">
+              <div class="project-thumb-inner">
+                <i class="fas fa-chart-pie" aria-hidden="true"></i>
+                <span>SaaS Dashboard</span>
+              </div>
+              <span class="project-tag">React + Node</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">DataPulse — Analytics Dashboard</h3>
+              <p class="project-desc">Real-time business intelligence dashboard with WebSocket data feeds, interactive charts, custom report generation, and team collaboration features.</p>
+              <div class="project-links">
+                <a href="#" class="project-btn project-btn-demo" aria-label="View live demo of DataPulse">
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i> Demo
+                </a>
+                <a href="#" class="project-btn project-btn-gh" aria-label="View DataPulse on GitHub">
+                  <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 4 -->
+          <article class="project-card reveal">
+            <div class="project-thumb">
+              <div class="project-thumb-inner">
+                <i class="fas fa-utensils" aria-hidden="true"></i>
+                <span>Restaurant Brand</span>
+              </div>
+              <span class="project-tag">HTML/CSS/JS</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">Maison Soleil — Restaurant Site</h3>
+              <p class="project-desc">Luxury restaurant website with online reservations, animated menu showcase, and a Google Maps integration. 3× increase in table bookings post-launch.</p>
+              <div class="project-links">
+                <a href="#" class="project-btn project-btn-demo" aria-label="View live demo of Maison Soleil">
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i> Demo
+                </a>
+                <a href="#" class="project-btn project-btn-gh" aria-label="View Maison Soleil on GitHub">
+                  <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 5 -->
+          <article class="project-card reveal reveal-delay-1">
+            <div class="project-thumb">
+              <div class="project-thumb-inner">
+                <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                <span>Ed-Tech Platform</span>
+              </div>
+              <span class="project-tag">Next.js + Postgres</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">LearnFlow — Online Course Platform</h3>
+              <p class="project-desc">Full LMS with video streaming, progress tracking, quizzes, certificates, and Stripe subscription billing. Serving 2,000+ active learners.</p>
+              <div class="project-links">
+                <a href="#" class="project-btn project-btn-demo" aria-label="View live demo of LearnFlow">
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i> Demo
+                </a>
+                <a href="#" class="project-btn project-btn-gh" aria-label="View LearnFlow on GitHub">
+                  <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 6 -->
+          <article class="project-card reveal reveal-delay-2">
+            <div class="project-thumb">
+              <div class="project-thumb-inner">
+                <i class="fas fa-house" aria-hidden="true"></i>
+                <span>Real Estate</span>
+              </div>
+              <span class="project-tag">React + CMS</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">NestFind — Real Estate Platform</h3>
+              <p class="project-desc">Property listing site with advanced filters, virtual tour integration, mortgage calculator, and agent lead capture system. SEO-first architecture.</p>
+              <div class="project-links">
+                <a href="#" class="project-btn project-btn-demo" aria-label="View live demo of NestFind">
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i> Demo
+                </a>
+                <a href="#" class="project-btn project-btn-gh" aria-label="View NestFind on GitHub">
+                  <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         TESTIMONIALS
+    ======================================================== -->
+    <section id="testimonials" aria-labelledby="testimonials-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label reveal">Client Reviews</div>
+            <h2 class="section-title reveal reveal-delay-1" id="testimonials-title">
+              What clients<br><em>say</em>
+            </h2>
+          </div>
+          <p class="section-subtitle reveal reveal-delay-2">
+            Don't take my word for it. Here's what real clients had to say after working together.
+          </p>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card reveal">
+            <div class="testimonial-stars" aria-label="5 out of 5 stars">
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+            </div>
+            <blockquote class="testimonial-text">
+              "Alex rebuilt our entire platform in 6 weeks. The quality was exceptional — clean code, pixel-perfect design, and he communicated every step of the way. Our conversion rate went up 38% in the first month."
+            </blockquote>
+            <div class="testimonial-author">
+              <div class="author-avatar" aria-hidden="true">S</div>
+              <div>
+                <div class="author-name">Sarah Chen</div>
+                <div class="author-role">CEO, Pulse Analytics</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card reveal reveal-delay-1">
+            <div class="testimonial-stars" aria-label="5 out of 5 stars">
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+            </div>
+            <blockquote class="testimonial-text">
+              "We hired Alex for a landing page redesign. The result was stunning — it looked better than anything we'd seen from agencies charging 5× the price. Zero revisions needed. Absolute professional."
+            </blockquote>
+            <div class="testimonial-author">
+              <div class="author-avatar" aria-hidden="true">M</div>
+              <div>
+                <div class="author-name">Marcus Webb</div>
+                <div class="author-role">Founder, NorthStar SaaS</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card reveal reveal-delay-2">
+            <div class="testimonial-stars" aria-label="5 out of 5 stars">
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+              <i class="fas fa-star" aria-hidden="true"></i>
+            </div>
+            <blockquote class="testimonial-text">
+              "Outstanding work on our restaurant website. He understood exactly what we needed — something luxurious but warm. Our online reservations tripled since the launch. Can't recommend Alex highly enough."
+            </blockquote>
+            <div class="testimonial-author">
+              <div class="author-avatar" aria-hidden="true">L</div>
+              <div>
+                <div class="author-name">Léa Dubois</div>
+                <div class="author-role">Owner, Maison Soleil</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         PRICING
+    ======================================================== -->
+    <section id="pricing" aria-labelledby="pricing-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label reveal">Investment</div>
+            <h2 class="section-title reveal reveal-delay-1" id="pricing-title">
+              Transparent<br><em>pricing</em>
+            </h2>
+          </div>
+          <p class="section-subtitle reveal reveal-delay-2">
+            No surprises, no hidden fees. Choose the package that fits your scope and budget.
+          </p>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- Basic -->
+          <div class="pricing-card reveal">
+            <div class="pricing-tier">Starter</div>
+            <div class="pricing-price">
+              <span class="price-currency">$</span>
+              <span class="price-amount" data-target="499">499</span>
+            </div>
+            <p class="pricing-desc">Ideal for small businesses needing a clean, professional online presence fast.</p>
+            <div class="pricing-divider"></div>
+            <ul class="pricing-features" role="list">
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Up to 5 pages</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Responsive design</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Contact form</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Basic SEO setup</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> 7-day delivery</li>
+              <li class="disabled" role="listitem"><i class="fas fa-times" aria-hidden="true"></i> CMS integration</li>
+              <li class="disabled" role="listitem"><i class="fas fa-times" aria-hidden="true"></i> E-commerce</li>
+              <li class="disabled" role="listitem"><i class="fas fa-times" aria-hidden="true"></i> Custom animations</li>
+            </ul>
+            <a href="#contact" class="btn btn-outline" style="width:100%; justify-content:center;">
+              Get Started
+            </a>
+          </div>
+
+          <!-- Standard / Featured -->
+          <div class="pricing-card featured reveal reveal-delay-1">
+            <div class="pricing-badge">Most Popular</div>
+            <div class="pricing-tier">Professional</div>
+            <div class="pricing-price">
+              <span class="price-currency">$</span>
+              <span class="price-amount">1,299</span>
+            </div>
+            <p class="pricing-desc">The go-to choice for growing businesses ready to invest in a high-quality web presence.</p>
+            <div class="pricing-divider"></div>
+            <ul class="pricing-features" role="list">
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Up to 12 pages</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Responsive design</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> CMS integration</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Full SEO package</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Custom animations</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> 14-day delivery</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> 30-day support</li>
+              <li class="disabled" role="listitem"><i class="fas fa-times" aria-hidden="true"></i> E-commerce</li>
+            </ul>
+            <a href="#contact" class="btn btn-primary" style="width:100%; justify-content:center;">
+              Get Started
+            </a>
+          </div>
+
+          <!-- Premium -->
+          <div class="pricing-card reveal reveal-delay-2">
+            <div class="pricing-tier">Enterprise</div>
+            <div class="pricing-price">
+              <span class="price-currency">$</span>
+              <span class="price-amount">2,999</span>
+            </div>
+            <p class="pricing-desc">For ambitious projects that demand the full package — custom, scalable, and conversion-focused.</p>
+            <div class="pricing-divider"></div>
+            <ul class="pricing-features" role="list">
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Unlimited pages</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> E-commerce ready</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Full-stack backend</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Advanced SEO + Analytics</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Premium animations</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Priority delivery</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> 90-day support</li>
+              <li role="listitem"><i class="fas fa-check" aria-hidden="true"></i> Performance audit</li>
+            </ul>
+            <a href="#contact" class="btn btn-outline" style="width:100%; justify-content:center;">
+              Get Started
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         CONTACT
+    ======================================================== -->
+    <section id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-label reveal">Get In Touch</div>
+            <h2 class="section-title reveal reveal-delay-1" id="contact-title">
+              Let's build something<br><em>great together</em>
+            </h2>
+          </div>
+        </div>
+
+        <div class="contact-wrap">
+          <!-- Info -->
+          <div class="contact-info reveal">
+            <p>Have a project in mind? I'd love to hear about it. Fill in the form or reach out directly via email or WhatsApp — I typically respond within a few hours.</p>
+
+            <div class="contact-links" role="list" aria-label="Contact links">
+              <a href="mailto:hello@alexmorgan.dev" class="contact-link" role="listitem">
+                <i class="fas fa-envelope" aria-hidden="true"></i>
+                <span class="contact-link-text">hello@alexmorgan.dev</span>
+              </a>
+              <a href="https://wa.me/11234567890" target="_blank" rel="noopener noreferrer" class="contact-link" role="listitem">
+                <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                <span class="contact-link-text">WhatsApp Chat</span>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="contact-link" role="listitem">
+                <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+                <span class="contact-link-text">linkedin.com/in/alexmorgan</span>
+              </a>
+            </div>
+
+            <div class="social-row" role="list" aria-label="Social media links">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="social-btn" role="listitem" aria-label="GitHub">
+                <i class="fab fa-github" aria-hidden="true"></i>
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="social-btn" role="listitem" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="social-btn" role="listitem" aria-label="Twitter / X">
+                <i class="fab fa-x-twitter" aria-hidden="true"></i>
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="social-btn" role="listitem" aria-label="Dribbble">
+                <i class="fab fa-dribbble" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="reveal reveal-delay-2">
+            <form class="contact-form" id="contact-form" novalidate aria-label="Contact form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="name">Your Name</label>
+                  <input type="text" id="name" name="name" placeholder="Jane Smith" required autocomplete="name" />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email Address</label>
+                  <input type="email" id="email" name="email" placeholder="jane@company.com" required autocomplete="email" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="service">Service Needed</label>
+                <select id="service" name="service" required>
+                  <option value="" disabled selected>Select a service…</option>
+                  <option value="website">Website Development</option>
+                  <option value="landing">Landing Page Design</option>
+                  <option value="redesign">Website Redesign</option>
+                  <option value="bugs">Bug Fixing</option>
+                  <option value="performance">Performance Optimization</option>
+                  <option value="seo">SEO Optimization</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="budget">Budget Range</label>
+                <select id="budget" name="budget">
+                  <option value="" disabled selected>Select a budget…</option>
+                  <option value="starter">Under $500</option>
+                  <option value="pro">$500 – $1,500</option>
+                  <option value="premium">$1,500 – $3,000</option>
+                  <option value="enterprise">$3,000+</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="message">Project Details</label>
+                <textarea id="message" name="message" placeholder="Tell me about your project — what you need, when you need it, and any specific requirements..." required></textarea>
+              </div>
+
+              <div id="form-msg" role="alert" aria-live="polite"></div>
+
+              <div class="form-submit">
+                <p class="form-note">
+                  <i class="fas fa-lock" aria-hidden="true"></i> Your information is kept private.
+                </p>
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                  <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                  Send Message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================
+       FOOTER
+  ======================================================== -->
+  <footer role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <!-- Brand -->
+        <div class="footer-brand">
+          <div class="footer-logo">Alex<span>.</span></div>
+          <p class="footer-tagline">Crafting premium digital experiences that drive growth. Available for freelance projects worldwide.</p>
+          <div class="social-row" role="list" aria-label="Social media links">
+            <a href="#" class="social-btn" role="listitem" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-btn" role="listitem" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-btn" role="listitem" aria-label="Twitter / X"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="social-btn" role="listitem" aria-label="Dribbble"><i class="fab fa-dribbble"></i></a>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div>
+          <div class="footer-col-title">Navigation</div>
+          <ul class="footer-links" role="list">
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <div class="footer-col-title">Services</div>
+          <ul class="footer-links" role="list">
+            <li><a href="#services">Web Development</a></li>
+            <li><a href="#services">Landing Pages</a></li>
+            <li><a href="#services">Redesign</a></li>
+            <li><a href="#services">SEO</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <div class="footer-col-title">Contact</div>
+          <ul class="footer-links" role="list">
+            <li><a href="mailto:hello@alexmorgan.dev">Email Me</a></li>
+            <li><a href="https://wa.me/11234567890" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+            <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a href="#pricing">View Pricing</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">
+          © 2026 <span>Alex Morgan</span>. Crafted with care. All rights reserved.
+        </p>
+        <p class="footer-copy">
+          Available for new projects · hello@alexmorgan.dev
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button id="back-to-top" aria-label="Scroll back to top">
+    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+  </button>
+
+  <!-- ========================================================
+       JAVASCRIPT
+  ======================================================== -->
+  <script>
+    'use strict';
+
+    /* --------------------------------------------------------
+       PRELOADER
+    -------------------------------------------------------- */
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('preloader').classList.add('hidden');
+        // Trigger hero animations
+        document.querySelectorAll('.hero-content .reveal').forEach(el => el.classList.add('visible'));
+        startCounters();
+      }, 600);
+    });
+
+    /* --------------------------------------------------------
+       NAVBAR — scroll state
+    -------------------------------------------------------- */
+    const navbar = document.getElementById('navbar');
+    const handleNavScroll = () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleNavScroll, { passive: true });
+
+    /* --------------------------------------------------------
+       HAMBURGER MENU
+    -------------------------------------------------------- */
+    const hamburger   = document.getElementById('hamburger');
+    const mobileNav   = document.getElementById('mobile-nav');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+
+    const toggleMenu = (open) => {
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', open);
+      mobileNav.classList.toggle('open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+
+    hamburger.addEventListener('click', () => {
+      toggleMenu(!hamburger.classList.contains('open'));
+    });
+
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => toggleMenu(false));
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && mobileNav.classList.contains('open')) toggleMenu(false);
+    });
+
+    /* --------------------------------------------------------
+       TYPED ANIMATION
+    -------------------------------------------------------- */
+    const typedEl  = document.getElementById('typed-text');
+    const phrases  = [
+      'Freelance Web Developer',
+      'UI/UX Designer',
+      'React Specialist',
+      'Performance Engineer',
+      'Your Next Developer'
+    ];
+    let phraseIdx = 0;
+    let charIdx   = 0;
+    let deleting  = false;
+    let typingPaused = false;
+
+    const type = () => {
+      const current = phrases[phraseIdx];
+      if (!deleting) {
+        typedEl.textContent = current.substring(0, charIdx + 1);
+        charIdx++;
+        if (charIdx === current.length) {
+          deleting = true;
+          typingPaused = true;
+          setTimeout(() => { typingPaused = false; scheduleType(40); }, 2000);
+          return;
+        }
+      } else {
+        typedEl.textContent = current.substring(0, charIdx - 1);
+        charIdx--;
+        if (charIdx === 0) {
+          deleting = false;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+        }
+      }
+      if (!typingPaused) scheduleType(deleting ? 40 : 85);
+    };
+
+    const scheduleType = (delay) => setTimeout(type, delay);
+    scheduleType(800);
+
+    /* --------------------------------------------------------
+       SCROLL REVEAL
+    -------------------------------------------------------- */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          // Animate skill bars when visible
+          const fill = entry.target.querySelector('.skill-bar-fill');
+          if (fill) {
+            const pct = entry.target.dataset.skill;
+            fill.style.width = pct + '%';
+          }
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    /* --------------------------------------------------------
+       COUNTER ANIMATION (hero stats)
+    -------------------------------------------------------- */
+    const startCounters = () => {
+      document.querySelectorAll('.stat-num[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target, 10);
+        const duration = 1800;
+        const start = performance.now();
+        const tick = (now) => {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(eased * target);
+          if (progress < 1) requestAnimationFrame(tick);
+          else el.textContent = target;
+        };
+        requestAnimationFrame(tick);
+      });
+    };
+
+    /* --------------------------------------------------------
+       BACK TO TOP
+    -------------------------------------------------------- */
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      backToTop.classList.toggle('visible', window.scrollY > 400);
+    }, { passive: true });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* --------------------------------------------------------
+       CONTACT FORM
+    -------------------------------------------------------- */
+    const form      = document.getElementById('contact-form');
+    const formMsg   = document.getElementById('form-msg');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      formMsg.className = '';
+      formMsg.style.display = 'none';
+
+      // Basic validation
+      const name    = form.name.value.trim();
+      const email   = form.email.value.trim();
+      const service = form.service.value;
+      const message = form.message.value.trim();
+
+      if (!name || !email || !service || !message) {
+        formMsg.textContent = 'Please fill in all required fields.';
+        formMsg.className = 'error';
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        formMsg.textContent = 'Please enter a valid email address.';
+        formMsg.className = 'error';
+        return;
+      }
+
+      // Simulate async submission
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+
+      await new Promise(res => setTimeout(res, 1500));
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+      form.reset();
+      formMsg.textContent = '✓ Message sent! I\'ll get back to you within a few hours.';
+      formMsg.className = 'success';
+
+      setTimeout(() => {
+        formMsg.style.display = 'none';
+        formMsg.className = '';
+      }, 5000);
+    });
+
+    /* --------------------------------------------------------
+       SMOOTH SCROLL for hero scroll button
+    -------------------------------------------------------- */
+    document.querySelector('.hero-scroll').addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    /* --------------------------------------------------------
+       ACTIVE NAV LINK on scroll
+    -------------------------------------------------------- */
+    const sections   = document.querySelectorAll('section[id]');
+    const navALinks  = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navALinks.forEach(a => a.style.color = '');
+          const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+          if (active) active.style.color = 'var(--gold)';
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+
+    sections.forEach(s => sectionObserver.observe(s));
+
+    /* --------------------------------------------------------
+       SERVICE CARD — hover micro-interaction
+    -------------------------------------------------------- */
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
+        card.style.transform = `translateY(-6px) rotateX(${-y}deg) rotateY(${x}deg)`;
+        card.style.transition = 'transform 0.1s ease';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+      });
+    });
+  </script>
+</body>
+</html>
